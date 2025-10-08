@@ -6,6 +6,20 @@ export default async function init() {
     const { instance: { exports } } = await WebAssembly.instantiate(bytes);
 
     console.log('exports', exports);
+    const gb = exports.gb_gameboy_create();
 
-    return {}
+    return {
+        load: (bytes) => {
+            const maxRomSize = exports.gb_gameboy_rom_size_get();
+
+            if (bytes.length > maxRomSize) {
+                throw new Error(`ROM too big: Max ROM size is ${maxRomSize} bytes`);
+            }
+
+            const ptr = exports.gb_gameboy_rom_ptr_get(gb);
+            console.log('ptr', ptr);
+            const buffer = new Uint8Array(exports.memory.buffer);
+            buffer.set(bytes, ptr);
+        }
+    }
 }
