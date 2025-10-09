@@ -3,6 +3,10 @@ import init from '../build/gb.js';
 const gb = await init();
 
 const loadButton = document.querySelector('#load-button');
+const stepButton = document.querySelector('#step-button');
+
+const bRegister = document.querySelector('#b-register');
+const cRegister = document.querySelector('#c-register');
 
 /**
  * Loads the ROM selected by the user into the Game Boy
@@ -15,4 +19,17 @@ async function onFileSelection(event) {
     gb.load(bytes);
 }
 
+function updateRegisters() {
+    bRegister.value = gb.b();
+    cRegister.value = gb.c();
+}
+
+function onStep() {
+    gb.step();
+    updateRegisters();
+}
+
 loadButton.addEventListener('change', onFileSelection);
+stepButton.addEventListener('click', onStep)
+
+updateRegisters();

@@ -2,7 +2,6 @@
 #define _BUS_H
 
 #include <stdint.h>
-#include "sm83.h"
 
 #define GB_KiB 1024                 /* 1 Kibibyte in bytes */
 #define GB_ROM00_SIZE (16 * GB_KiB) /* rom bank 00 size in bytes */
@@ -12,12 +11,14 @@
  */
 typedef struct GB_Bus
 {
-    GB_SM83 *sm83;
     uint8_t rom00[GB_ROM00_SIZE]; /* rom bank 00 */
 
 } GB_Bus;
 
-GB_Bus *gb_bus_create(GB_SM83 *sm83);
+GB_Bus *gb_bus_create();
 void gb_bus_destroy(GB_Bus *bus);
+
+uint8_t gb_bus_read(GB_Bus *bus, uint16_t address); // TODO: this might be an irrelevant function
+uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
 
 #endif

@@ -14,10 +14,12 @@ EMSCRIPTEN_KEEPALIVE
 GB_GameBoy *gb_gameboy_create(void)
 {
     GB_GameBoy *gb = malloc(sizeof(GB_GameBoy));
-    GB_SM83 *sm83 = gb_sm83_create();
-    GB_Bus *bus = gb_bus_create(sm83);
+
+    GB_Bus *bus = gb_bus_create();
+    GB_SM83 *sm83 = gb_sm83_create(bus);
 
     gb->bus = bus;
+    gb->sm83 = sm83;
 
     return gb;
 }
@@ -30,6 +32,7 @@ EMSCRIPTEN_KEEPALIVE
 void gb_gameboy_destroy(GB_GameBoy *gb)
 {
     gb_bus_destroy(gb->bus);
+    gb_sm83_destroy(gb->sm83);
     free(gb);
 }
 
@@ -51,4 +54,13 @@ EMSCRIPTEN_KEEPALIVE
 int gb_gameboy_rom_size_get()
 {
     return GB_ROM00_SIZE;
+}
+
+/**
+ * Steps the SM83 through one machine cycle.
+ */
+EMSCRIPTEN_KEEPALIVE
+void gb_gameboy_step(GB_GameBoy *gb)
+{
+    gb_sm83_step(gb->sm83);
 }

@@ -1,40 +1,14 @@
 #include <stdint.h>
-
-#define GB_MAX_INSTRUCTION_SIZE 3 /* maximum instruction size in bytes */
-
-/**
- * The instruction types available.
- * Used as a tag to switch against.
- */
-typedef enum
-{
-    GB_INSTRUCTION_UNDEFINED = 0, /* undefined */
-    GB_INSTRUCTION_NOP,           /* nop */
-    GB_INSTRUCTION_LD_BC_N16,     /* ld bc, n16 */
-
-} GB_InstructionType;
-
-/**
- * An instruction.
- * Contains a instruction type tag and holds the bytes of the original encoding
- * plus its length.
- */
-typedef struct GB_Instruction
-{
-    GB_InstructionType type;
-    int length;
-    uint8_t bytes[GB_MAX_INSTRUCTION_SIZE];
-} GB_Instruction;
-
-static void gb_instruction_bytes_copy(uint8_t *source, uint8_t *dest, int count);
+#include <string.h>
+#include "instructions.h"
 
 /**
  * Initializes an instruction.
- * Takes the three bytes (maximum) that encode the instruction and decodes them.
+ * Takes the bytes (three maximum) that encode the instruction and decodes them.
  */
-void gb_instruction_init(GB_Instruction *instruction, uint8_t *bytes)
+void gb_instruction_init(GB_Instruction *instruction, uint8_t *encoded_bytes)
 {
-    int opcode = bytes[0];
+    int opcode = encoded_bytes[0];
 
     int high = (opcode & 0xf0) >> 4; // high nibble from opcode
     int low = opcode & 0xf;          // low nibble from opcode
@@ -61,13 +35,5 @@ void gb_instruction_init(GB_Instruction *instruction, uint8_t *bytes)
     }
     }
 
-    gb_instruction_bytes_copy(bytes, instruction->bytes, instruction->length);
-}
-
-static void gb_instruction_bytes_copy(uint8_t *source, uint8_t *dest, int count)
-{
-    for (int i = 0; i < count; i++)
-    {
-        dest[i] = source[i];
-    }
+    memcpy(instruction->bytes, encoded_bytes, instruction->length);
 }
