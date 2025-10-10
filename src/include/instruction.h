@@ -1,5 +1,5 @@
-#ifndef _INSTRUCTIONS_H
-#define _INSTRUCTIONS_H
+#ifndef _INSTRUCTION_H
+#define _INSTRUCTION_H
 
 #include <stdint.h>
 
@@ -29,6 +29,6 @@ typedef struct GB_Instruction
     uint8_t bytes[GB_MAX_INSTRUCTION_SIZE];
 } GB_Instruction;
 
-void gb_instruction_init(GB_Instruction *instruction, uint8_t *bytes);
+void gb_instruction_fetch(GB_Instruction *instruction, uint8_t *bytes);
 
 #endif

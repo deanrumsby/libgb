@@ -15,9 +15,6 @@ typedef struct GB_Bus
 
 } GB_Bus;
 
-GB_Bus *gb_bus_create();
-void gb_bus_destroy(GB_Bus *bus);
-
 uint8_t gb_bus_read(GB_Bus *bus, uint16_t address); // TODO: this might be an irrelevant function
 uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
 

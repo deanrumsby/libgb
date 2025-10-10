@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include <string.h>
-#include "instructions.h"
+#include "instruction.h"
 
 /**
- * Initializes an instruction.
+ * Fetches and initializes an instruction from a stream of encoded bytes.
  * Takes the bytes (three maximum) that encode the instruction and decodes them.
  */
-void gb_instruction_init(GB_Instruction *instruction, uint8_t *encoded_bytes)
+void gb_instruction_fetch(GB_Instruction *instruction, uint8_t *encoded_bytes)
 {
     int opcode = encoded_bytes[0];
 

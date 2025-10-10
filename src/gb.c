@@ -15,8 +15,10 @@ GB_GameBoy *gb_gameboy_create(void)
 {
     GB_GameBoy *gb = malloc(sizeof(GB_GameBoy));
 
-    GB_Bus *bus = gb_bus_create();
-    GB_SM83 *sm83 = gb_sm83_create(bus);
+    GB_Bus *bus = malloc(sizeof(GB_Bus));
+    GB_SM83 *sm83 = malloc(sizeof(GB_SM83));
+
+    gb_sm83_init(sm83, bus);
 
     gb->bus = bus;
     gb->sm83 = sm83;
@@ -31,8 +33,9 @@ GB_GameBoy *gb_gameboy_create(void)
 EMSCRIPTEN_KEEPALIVE
 void gb_gameboy_destroy(GB_GameBoy *gb)
 {
-    gb_bus_destroy(gb->bus);
-    gb_sm83_destroy(gb->sm83);
+    free(gb->sm83);
+    free(gb->bus);
+
     free(gb);
 }
 

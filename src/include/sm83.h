@@ -9,6 +9,8 @@
  */
 typedef struct GB_SM83
 {
+    GB_Bus *bus; /* a pointer to the 16-bit address bus */
+
     uint16_t pc; /* program counter register */
     uint16_t sp; /* stack pointer register */
 
@@ -22,9 +24,7 @@ typedef struct GB_SM83
     uint8_t f; /* flags register */
 } GB_SM83;
 
-GB_SM83 *gb_sm83_create(GB_Bus *bus);
-void gb_sm83_destroy(GB_SM83 *sm83);
-
+void gb_sm83_init(GB_SM83 *sm83, GB_Bus *bus);
 void gb_sm83_step(GB_SM83 *sm83);
 
 #endif
