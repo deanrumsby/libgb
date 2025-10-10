@@ -56,7 +56,7 @@ uint8_t *gb_gameboy_rom_ptr_get(GB_GameBoy *gb)
 EMSCRIPTEN_KEEPALIVE
 int gb_gameboy_rom_size_get()
 {
-    return GB_ROM00_SIZE;
+    return GB_ROM_BANK_SIZE;
 }
 
 /**

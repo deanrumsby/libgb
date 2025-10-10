@@ -3,29 +3,66 @@
 #include "bus.h"
 #include "sm83.h"
 
-/**
- * Read a byte from a specified address on the bus.
- * Returns a 8-bit byte.
- *
- * TODO: this might be a redundant function if gb_bus_address_ptr_get is more useful
- */
-uint8_t gb_bus_read(GB_Bus *bus, uint16_t address)
-{
-    if (address >= 0x0000 && address < 0x4000)
-    {
-        return bus->rom00[address];
-    }
+#define GB_ROM00_START 0
+#define GB_ROM00_END 0x3fff
 
-    return 0xcd;
-}
+#define GB_ROM01_START 0x4000
+#define GB_ROM01_END 0x7fff
+
+#define GB_VRAM_START 0x8000
+#define GB_VRAM_END 0x9fff
+
+#define GB_EXTERNAL_RAM_START 0xa000
+#define GB_EXTERNAL_RAM_END 0xbfff
+
+#define GB_WRAM00_START 0xc000
+#define GB_WRAM00_END 0xcfff
+
+#define GB_WRAM01_START 0xd000
+#define GB_WRAM01_END 0xdfff
+
+#define GB_ECHO_RAM_START 0xe000
+#define GB_ECHO_RAM_END 0xfdff
 
 /**
  * Finds the location of a provided 16-bit address and returns a pointer to it.
  */
 uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address)
 {
-    if (address >= 0x0000 && address < 0x4000)
+    // ROM BANK 00
+    if (address >= GB_ROM00_START && address <= GB_ROM00_END)
     {
         return bus->rom00 + address;
+    }
+    // ROM BANK 01
+    else if (address >= GB_ROM01_START && address <= GB_ROM01_END)
+    {
+        return bus->rom01 + address - GB_ROM01_START;
+    }
+    // VRAM
+    else if (address >= GB_VRAM_START && address <= GB_VRAM_END)
+    {
+        return bus->vram + address - GB_VRAM_START;
+    }
+    // EXTERNAL RAM
+    else if (address >= GB_EXTERNAL_RAM_START && address <= GB_EXTERNAL_RAM_END)
+    {
+        return bus->eram00 + address - GB_EXTERNAL_RAM_START;
+    }
+    // WRAM BANK 00
+    else if (address >= GB_WRAM00_START && address <= GB_WRAM00_END)
+    {
+        return bus->wram00 + address - GB_WRAM00_START;
+    }
+    // WRAM BANK 01
+    else if (address >= GB_WRAM01_START && address <= GB_WRAM01_END)
+    {
+        return bus->wram01 + address - GB_WRAM01_START;
+    }
+    // ECHO RAM
+    else if (address >= GB_ECHO_RAM_START && address <= GB_ECHO_RAM_END)
+    {
+        // this ram mirrors wram00 so just point there
+        return bus->wram00 + address - GB_ECHO_RAM_START;
     }
 }
