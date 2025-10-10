@@ -1,12 +1,13 @@
 import init from '../build/gb.js';
+import { formatHex, formatDec } from './utils.js';
 
 const gb = await init();
 
 const loadButton = document.querySelector('#load-button');
 const stepButton = document.querySelector('#step-button');
 
-const bRegister = document.querySelector('#b-register');
-const cRegister = document.querySelector('#c-register');
+const registerB = document.querySelector('#register-b');
+const registerC = document.querySelector('#register-c');
 
 /**
  * Loads the ROM selected by the user into the Game Boy
@@ -19,9 +20,10 @@ async function onFileSelection(event) {
     gb.load(bytes);
 }
 
+
 function updateRegisters() {
-    bRegister.value = gb.b();
-    cRegister.value = gb.c();
+    registerB.value = formatHex(gb.b(), 2);
+    registerC.value = formatHex(gb.c(), 2);
 }
 
 function onStep() {
