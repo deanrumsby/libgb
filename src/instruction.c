@@ -1,14 +1,14 @@
 #include <stdint.h>
-#include <string.h>
 #include "instruction.h"
 
 /**
- * Fetches and initializes an instruction from a stream of encoded bytes.
- * Takes the bytes (three maximum) that encode the instruction and decodes them.
+ * Given an opcode, decodes the instruction type and length.
+ * The opcode is inserted into the instruction's bytes array as the first element.
+ * The rest of the instruction bytes must be appended manually.
  */
-void gb_instruction_fetch(GB_Instruction *instruction, uint8_t *encoded_bytes)
+void gb_instruction_decode(GB_Instruction *instruction, uint8_t opcode)
 {
-    int opcode = encoded_bytes[0];
+    instruction->bytes[0] = opcode;
 
     int high = (opcode & 0xf0) >> 4; // high nibble from opcode
     int low = opcode & 0xf;          // low nibble from opcode
@@ -34,6 +34,4 @@ void gb_instruction_fetch(GB_Instruction *instruction, uint8_t *encoded_bytes)
         break;
     }
     }
-
-    memcpy(instruction->bytes, encoded_bytes, instruction->length);
 }

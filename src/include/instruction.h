@@ -29,6 +29,6 @@ typedef struct GB_Instruction
     uint8_t bytes[GB_MAX_INSTRUCTION_SIZE];
 } GB_Instruction;
 
-void gb_instruction_fetch(GB_Instruction *instruction, uint8_t *bytes);
+void gb_instruction_decode(GB_Instruction *instruction, uint8_t opcode);
 
 #endif

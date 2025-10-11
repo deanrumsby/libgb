@@ -4,6 +4,8 @@
 #include "bus.h"
 #include "instruction.h"
 
+static uint8_t gb_sm83_fetch(GB_SM83 *sm83);
+static void gb_sm83_decode(GB_SM83 *sm83, GB_Instruction *instruction, uint8_t opcode);
 static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction);
 
 /**
@@ -31,14 +33,36 @@ void gb_sm83_init(GB_SM83 *sm83, GB_Bus *bus)
  */
 void gb_sm83_step(GB_SM83 *sm83)
 {
-    uint8_t *encoded_bytes = gb_bus_address_ptr_get(sm83->bus, sm83->pc);
+    uint8_t opcode = gb_sm83_fetch(sm83);
 
     GB_Instruction instruction;
-    gb_instruction_fetch(&instruction, encoded_bytes);
-
-    sm83->pc += instruction.length;
+    gb_sm83_decode(sm83, &instruction, opcode);
 
     gb_sm83_execute(sm83, &instruction);
+}
+
+/**
+ * Fetches the next byte pointed at by the program counter.
+ */
+static uint8_t gb_sm83_fetch(GB_SM83 *sm83)
+{
+    uint8_t byte = gb_bus_read(sm83->bus, sm83->pc);
+    sm83->pc += 1;
+
+    return byte;
+}
+
+/**
+ * Decodes the instruction.
+ */
+static void gb_sm83_decode(GB_SM83 *sm83, GB_Instruction *instruction, uint8_t opcode)
+{
+    gb_instruction_decode(instruction, opcode);
+
+    for (int i = 1; i < instruction->length; i++)
+    {
+        instruction->bytes[i] = gb_sm83_fetch(sm83);
+    }
 }
 
 /**

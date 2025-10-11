@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+// TODO: maybe rename these macros to GB_BUS_... ?
+
 #define GB_KiB 1024                            /* 1 kibibyte in bytes */
 #define GB_ROM_BANK_SIZE (16 * GB_KiB)         /* rom bank size in bytes */
 #define GB_VRAM_SIZE (8 * GB_KiB)              /* vram size in bytes */
@@ -23,6 +25,7 @@ typedef struct GB_Bus
 
 } GB_Bus;
 
-uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
+uint8_t gb_bus_read(GB_Bus *bus, uint16_t address);
+void gb_bus_write(GB_Bus *bus, uint16_t address, uint8_t value);
 
 #endif
