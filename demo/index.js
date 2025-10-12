@@ -6,8 +6,48 @@ const gb = await init();
 const loadButton = document.querySelector('#load-button');
 const stepButton = document.querySelector('#step-button');
 
-const registerB = document.querySelector('#register-b');
-const registerC = document.querySelector('#register-c');
+const registers = [
+    {
+        id: "b",
+        label: "B:",
+        bits: 8,
+        format: (value) => formatHex(value, 2),
+        get: () => gb.b,
+    },
+    {
+        id: "c",
+        label: "C:",
+        bits: 8,
+        format: (value) => formatHex(value, 2),
+        get: () => gb.c,
+    }
+];
+
+function initUI() {
+    initRegistersView();
+}
+
+function initRegistersView() {
+    const container = document.querySelector('#registers');
+
+    for (const register of registers) {
+        const div = document.createElement('div');
+        div.classList.add('register');
+
+        const input = document.createElement('input');
+        input.id = register.id;
+        input.dataset.bits = register.bits;
+
+        const label = document.createElement('label');
+        label.htmlFor = register.id;
+        label.textContent = register.label;
+
+        div.replaceChildren(label, input);
+        container.appendChild(div);
+    }
+
+    updateRegisters();
+}
 
 /**
  * Loads the ROM selected by the user into the Game Boy
@@ -22,8 +62,12 @@ async function onFileSelection(event) {
 
 
 function updateRegisters() {
-    registerB.value = formatHex(gb.b(), 2);
-    registerC.value = formatHex(gb.c(), 2);
+    const container = document.querySelector('#registers');
+    for (const register of registers) {
+        const input = container.querySelector(`#${register.id}`);
+        const value = register.get();
+        input.value = register.format(value);
+    }
 }
 
 function onStep() {
@@ -34,4 +78,4 @@ function onStep() {
 loadButton.addEventListener('change', onFileSelection);
 stepButton.addEventListener('click', onStep)
 
-updateRegisters();
+initUI();

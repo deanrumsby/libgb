@@ -23,12 +23,22 @@ void gb_instruction_decode(GB_Instruction *instruction, uint8_t opcode)
         {
             instruction->type = GB_INSTRUCTION_NOP;
             instruction->length = 1;
+            instruction->t_cycles = 4;
             break;
         }
         case 0x1:
         {
             instruction->type = GB_INSTRUCTION_LD_BC_N16;
             instruction->length = 3;
+            instruction->t_cycles = 12;
+            break;
+        }
+        case 0x2:
+        {
+            instruction->type = GB_INSTRUCTION_LD_MEM_BC_A;
+            instruction->length = 1;
+            instruction->t_cycles = 8;
+            break;
         }
         }
         break;

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define GB_MAX_INSTRUCTION_SIZE 3 /* maximum instruction size in bytes */
+#define GB_INSTRUCTION_MAX_SIZE 3 /* maximum instruction size in bytes */
 
 /**
  * The instruction types available.
@@ -12,21 +12,23 @@
 typedef enum
 {
     GB_INSTRUCTION_UNDEFINED = 0, /* undefined */
-    GB_INSTRUCTION_NOP,           /* nop */
-    GB_INSTRUCTION_LD_BC_N16,     /* ld bc, n16 */
+    GB_INSTRUCTION_NOP,           /* 00 NOP */
+    GB_INSTRUCTION_LD_BC_N16,     /* 01 LD BC, n16 */
+    GB_INSTRUCTION_LD_MEM_BC_A,   /* 02 LD [BC], A */
 
 } GB_InstructionType;
 
 /**
  * An instruction.
- * Contains a instruction type tag and holds the bytes of the original encoding
- * plus its length.
+ * Contains a instruction type tag and holds the bytes of the original encoding,
+ * plus its length and the number of t-cycles it takes to execute.
  */
 typedef struct GB_Instruction
 {
     GB_InstructionType type;
     int length;
-    uint8_t bytes[GB_MAX_INSTRUCTION_SIZE];
+    int t_cycles;
+    uint8_t bytes[GB_INSTRUCTION_MAX_SIZE];
 } GB_Instruction;
 
 void gb_instruction_decode(GB_Instruction *instruction, uint8_t opcode);

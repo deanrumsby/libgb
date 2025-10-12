@@ -9,8 +9,12 @@ export default async function init() {
     const gb = exports.gb_gameboy_create();
 
     return {
-        b: () => exports.gb_registers_b_get(gb),
-        c: () => exports.gb_registers_c_get(gb),
+        get b() {
+            return exports.gb_registers_b_get(gb);
+        },
+        get c() {
+            return exports.gb_registers_c_get(gb);
+        },
         load: (bytes) => {
             const maxRomSize = exports.gb_gameboy_rom_size_get();
 

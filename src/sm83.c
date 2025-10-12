@@ -3,6 +3,7 @@
 #include "sm83.h"
 #include "bus.h"
 #include "instruction.h"
+#include "utils.h"
 
 static uint8_t gb_sm83_fetch(GB_SM83 *sm83);
 static void gb_sm83_decode(GB_SM83 *sm83, GB_Instruction *instruction, uint8_t opcode);
@@ -73,14 +74,23 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
     switch (instruction->type)
     {
     case GB_INSTRUCTION_UNDEFINED:
+    // 00 NOP
     case GB_INSTRUCTION_NOP:
     {
         break;
     }
+    // 01 LD BC, n16
     case GB_INSTRUCTION_LD_BC_N16:
     {
         sm83->b = instruction->bytes[1];
         sm83->c = instruction->bytes[2];
+        break;
+    }
+    // 02 LD [BC], A
+    case GB_INSTRUCTION_LD_MEM_BC_A:
+    {
+        uint16_t address = gb_utils_u16_from_u8(sm83->b, sm83->c);
+        gb_bus_write(sm83->bus, address, sm83->a);
         break;
     }
     }
