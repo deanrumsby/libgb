@@ -1,3 +1,7 @@
+body {
+    font-family: monospace;
+}
+
 h2 {
     margin: 0.5em 0
 }
@@ -20,4 +24,19 @@ h2 {
 
 .register input[data-bits="8"] {
     width: 3ch;
+}
+
+.memory {
+    margin-top: 1em;
+}
+
+.memory-line {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.memory-cell {
+    width: 3ch;
+    border: 0;
 }

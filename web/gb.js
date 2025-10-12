@@ -15,6 +15,7 @@ export default async function init() {
         get c() {
             return exports.gb_registers_c_get(gb);
         },
+        read: (address) => exports.gb_memory_get(gb, address),
         load: (bytes) => {
             const maxRomSize = exports.gb_gameboy_rom_size_get();
 

@@ -1,4 +1,4 @@
 # TODO
 
-- Create memory view for demo
-- Create repeatable UI elements from JS
+- Clean up memory view code!!
+- Rethink init for memory view too
