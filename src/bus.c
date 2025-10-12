@@ -25,6 +25,8 @@
 #define GB_BUS_ECHO_RAM_START 0xe000
 #define GB_BUS_ECHO_RAM_END 0xfdff
 
+#define GB_BUS_INVALID_READ_VALUE 0xcd /* a random value to help show invalid reads */
+
 static bool gb_bus_address_writeable(uint16_t address);
 static uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
 
@@ -33,7 +35,15 @@ static uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
  */
 uint8_t gb_bus_read(GB_Bus *bus, uint16_t address)
 {
-    return *gb_bus_address_ptr_get(bus, address);
+    uint8_t *ptr = gb_bus_address_ptr_get(bus, address);
+
+    // invalid reads should not happen since the whole address space is mapped.
+    // this check is here purely for use whilst building the project
+    // and to ensure all control flows are handled.
+    if (!ptr)
+        return GB_BUS_INVALID_READ_VALUE;
+
+    return *ptr;
 }
 
 /**
@@ -44,7 +54,11 @@ void gb_bus_write(GB_Bus *bus, uint16_t address, uint8_t value)
     if (!gb_bus_address_writeable(address))
         return;
 
-    *gb_bus_address_ptr_get(bus, address) = value;
+    // this check might be redundant once the whole memory map is built
+    uint8_t *ptr = gb_bus_address_ptr_get(bus, address);
+
+    if (ptr)
+        *ptr = value;
 }
 
 /**
@@ -97,6 +111,6 @@ static uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address)
         // this ram mirrors wram00 so just point there
         return bus->wram00 + address - GB_BUS_ECHO_RAM_START;
     }
-    // TODO: add a return here so that every control path is managed - technically this should be impossible
-    // to reach as every 16-bit address is handled
+    // this should be unreachable since all the 16-bit address space is mapped
+    return NULL;
 }
