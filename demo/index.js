@@ -121,6 +121,14 @@ function initMemoryView() {
 //////////////////////////////////// update functions /////////////////////////////////////////////
 
 /**
+ * Updates all UI elements
+ */
+function updateUI() {
+    updateRegisters();
+    updateMemory();
+}
+
+/**
  * Updates the shown register values
  */
 function updateRegisters() {
@@ -155,7 +163,6 @@ function viewMemoryPage(page) {
     const container = document.querySelector('#memory');
     container.replaceChildren(createMemoryPage(page));
     currentMemoryPage = page;
-    updateMemory();
 }
 
 /**
@@ -222,6 +229,8 @@ function createMemoryLine(offset) {
     return container;
 }
 
+/////////////////////////////////////// handlers //////////////////////////////////////////////////
+
 /**
  * Loads the ROM selected by the user into the Game Boy
  * @param {Event} event 
@@ -231,9 +240,9 @@ async function onFileSelection(event) {
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
     gb.load(bytes);
+    updateMemory();
 }
 
-/////////////////////////////////////// handlers //////////////////////////////////////////////////
 
 /**
  * Handles when the user asks for the next page of memory
@@ -242,6 +251,7 @@ async function onFileSelection(event) {
 function onMemoryPageNext() {
     const page = Math.min(currentMemoryPage + 1, MEMORY_PAGE_COUNT - 1);
     viewMemoryPage(page);
+    updateMemory();
 }
 
 /**
@@ -251,6 +261,7 @@ function onMemoryPageNext() {
 function onMemoryPagePrev() {
     const page = Math.max(currentMemoryPage - 1, 0);
     viewMemoryPage(page);
+    updateMemory();
 }
 
 /**
@@ -259,7 +270,7 @@ function onMemoryPagePrev() {
  */
 function onStep() {
     gb.step();
-    updateRegisters();
+    updateUI();
 }
 
 ///////////////////////////// event listeners /////////////////////////////////////////////////////
