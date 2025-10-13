@@ -1,21 +1,39 @@
 import init from '../build/gb.js';
 import { formatHex, formatDec } from './utils.js';
 
-const MEMORY_METADATA = {
-    PAGE_SIZE: 256,
-    PAGE_COUNT: 256
-}
+///////////////////////////////////// constants ///////////////////////////////////////////////////
 
-let memoryPage = 0;
+/**
+ * The total count of addressable memory locations
+ * 0x0000 to 0xffff;
+ */
+const MEMORY_TOTAL_SIZE = 0x10000;
 
-const gb = await init();
+/**
+ * The number of memory addresses displayed per line in the memory viewer
+ */
+const MEMORY_PAGE_LINE_SIZE = 16;
 
-const loadButton = document.querySelector('#load-button');
-const stepButton = document.querySelector('#step-button');
-const memoryPrevButton = document.querySelector('#memory-prev-button');
-const memoryNextButton = document.querySelector('#memory-next-button');
+/**
+ * The number of lines shown on each page of the memory view.
+ */
+const MEMORY_PAGE_LINE_COUNT = 16;
 
-const registers = [
+/**
+ * The number of memory locations shown on each page of the memory viewer.
+ */
+const MEMORY_PAGE_SIZE = MEMORY_PAGE_LINE_SIZE * MEMORY_PAGE_LINE_COUNT;
+
+/**
+ * The total number of pages viewable in the memory viewer.
+ */
+const MEMORY_PAGE_COUNT = MEMORY_TOTAL_SIZE / MEMORY_PAGE_SIZE;
+
+/**
+ * Config for the registers view. 
+ * Used when sizing the input boxes and handling how to get and set values.
+ */
+const REGISTERS = [
     {
         id: "b",
         label: "B:",
@@ -32,15 +50,45 @@ const registers = [
     }
 ];
 
+///////////////////////////////////// state ///////////////////////////////////////////////////////
+
+/**
+ * The WASM module.
+ */
+const gb = await init();
+
+/**
+ * The memory page currently displayed in the memory viewer.
+ */
+let currentMemoryPage = 0;
+
+////////////////////////////////////// buttons ////////////////////////////////////////////////////
+
+const loadButton = document.querySelector('#load-button');
+const stepButton = document.querySelector('#step-button');
+const memoryPrevButton = document.querySelector('#memory-prev-button');
+const memoryNextButton = document.querySelector('#memory-next-button');
+
+//////////////////////////////////// ui initializer functions /////////////////////////////////////
+
+/**
+ * Initializes the UI for the page.
+ * Creating and fetching all initial data for the UI elements.
+ */
 function initUI() {
     initRegistersView();
     initMemoryView();
 }
 
+/**
+ * Initializes the registers view. 
+ * The registers view allows the user to inspect and edit all the values 
+ * found in the registers of the Game Boy's SM83 CPU core.
+ */
 function initRegistersView() {
     const container = document.querySelector('#registers');
 
-    for (const register of registers) {
+    for (const register of REGISTERS) {
         const div = document.createElement('div');
         div.classList.add('register');
 
@@ -59,35 +107,117 @@ function initRegistersView() {
     updateRegisters();
 }
 
+/**
+ * Initializes the memory view.
+ * The memory view allows the user to inspect and edit all the memory addresses
+ * that are connected on the bus. The range encompasses all 16-bit addresses i.e.
+ * from 0x0000 to 0xffff.
+ */
 function initMemoryView() {
-    const container = document.querySelector('#memory');
-    container.replaceChildren(createMemoryPage(0));
+    viewMemoryPage(0);
     updateMemory();
 }
 
-function createMemoryPage(page) {
-    if (page < 0 || page >= MEMORY_METADATA.PAGE_COUNT) return;
+//////////////////////////////////// update functions /////////////////////////////////////////////
 
+/**
+ * Updates the shown register values
+ */
+function updateRegisters() {
+    const container = document.querySelector('#registers');
+    for (const register of REGISTERS) {
+        const input = container.querySelector(`#${register.id}`);
+        const value = register.get();
+        input.value = register.format(value);
+    }
+}
+
+/**
+ * Updates the shown memory values
+ */
+function updateMemory() {
+    const container = document.querySelector('#memory');
+    const cells = container.querySelectorAll('.memory-cell');
+
+    for (const cell of cells) {
+        const value = gb.read(cell.name);
+        cell.value = formatHex(value, 2);
+    }
+}
+
+//////////////////////////////////// helper functions /////////////////////////////////////////////
+
+/**
+ * Updates the UI to show a particular page of memory.
+ * @param {number} page the page index that should be viewed
+ */
+function viewMemoryPage(page) {
+    const container = document.querySelector('#memory');
+    container.replaceChildren(createMemoryPage(page));
+    currentMemoryPage = page;
+    updateMemory();
+}
+
+/**
+ * Creates a 16 x 16 page of editable memory addresses.
+ * @param {number} page the page index that should be created 
+ * @returns {HTMLDivElement}
+ */
+function createMemoryPage(page) {
     const container = document.createElement('div');
 
-    for (let i = 0; i < 16; i++) {
-        const line = document.createElement('div');
-        line.classList.add('memory-line');
-        const offsetSpan = document.createElement('span');
-        const lineOffset = page * MEMORY_METADATA.PAGE_SIZE + (i * 16);
-        offsetSpan.textContent = formatHex(lineOffset, 4);
+    if (page < 0 || page >= MEMORY_PAGE_COUNT) {
+        return container;
+    }
 
-        const lineCells = document.createElement('div');
-        for (let j = 0; j < 16; j++) {
-            const input = document.createElement('input');
-            input.classList.add('memory-cell');
-            const offset = lineOffset + j;
-            input.dataset.address = offset;
-            lineCells.appendChild(input);
-        }
-        line.replaceChildren(offsetSpan, lineCells);
+    // create each line of 16 memory cells
+    for (let i = 0; i < MEMORY_PAGE_LINE_COUNT; i++) {
+        const offset = (MEMORY_PAGE_SIZE * page) + (i * MEMORY_PAGE_LINE_SIZE);
+        const line = createMemoryLine(offset)
         container.appendChild(line);
     }
+
+    return container;
+}
+
+/**
+ * Creates a line of 16 memory addresses for use in the memory view.
+ * @param {number} offset the starting address for the line
+ * @returns {HTMLDivElement} the line
+ */
+function createMemoryLine(offset) {
+    const container = document.createElement('div');
+    container.classList.add('memory-line');
+
+    // create the span that displays the offset for
+    // this line
+    const span = document.createElement('span');
+    span.textContent = formatHex(offset, 4);
+
+    // create the memory cells for the line
+    const cells = document.createElement('div');
+
+    for (let i = 0; i < MEMORY_PAGE_LINE_SIZE; i++) {
+        const address = offset + i;
+
+        // if the current address would be out of bounds then stop
+        if (address < 0 || address >= MEMORY_TOTAL_SIZE) {
+            break;
+        }
+
+        const input = document.createElement('input');
+        input.classList.add('memory-cell');
+
+        // set the address as the name so it
+        // can be used by event listeners to edit 
+        // and fetch the memory value
+        input.name = address;
+
+        // append to the line
+        cells.appendChild(input);
+    }
+
+    container.replaceChildren(span, cells);
 
     return container;
 }
@@ -103,50 +233,42 @@ async function onFileSelection(event) {
     gb.load(bytes);
 }
 
+/////////////////////////////////////// handlers //////////////////////////////////////////////////
+
+/**
+ * Handles when the user asks for the next page of memory
+ * in the memory view.
+ */
 function onMemoryPageNext() {
-    const container = document.querySelector('#memory');
-    const page = Math.min(memoryPage + 1, MEMORY_METADATA.PAGE_COUNT - 1);
-    memoryPage = page;
-    container.replaceChildren(createMemoryPage(page));
-    updateMemory();
+    const page = Math.min(currentMemoryPage + 1, MEMORY_PAGE_COUNT - 1);
+    viewMemoryPage(page);
 }
 
+/**
+ * Handles when the user asks for the previous page of memory
+ * in the memory view.
+ */
 function onMemoryPagePrev() {
-    const container = document.querySelector('#memory');
-    const page = Math.max(memoryPage - 1, 0);
-    memoryPage = page;
-    container.replaceChildren(createMemoryPage(page));
-    updateMemory();
+    const page = Math.max(currentMemoryPage - 1, 0);
+    viewMemoryPage(page);
 }
 
-
-function updateRegisters() {
-    const container = document.querySelector('#registers');
-    for (const register of registers) {
-        const input = container.querySelector(`#${register.id}`);
-        const value = register.get();
-        input.value = register.format(value);
-    }
-}
-
-function updateMemory() {
-    const container = document.querySelector('#memory');
-    const cells = container.querySelectorAll('.memory-cell');
-
-    for (const cell of cells) {
-        const value = gb.read(cell.dataset.address);
-        cell.value = formatHex(value, 2);
-    }
-}
-
+/**
+ * Handles when the user asks to proceed the emulation by one
+ * machine cycle
+ */
 function onStep() {
     gb.step();
     updateRegisters();
 }
 
+///////////////////////////// event listeners /////////////////////////////////////////////////////
+
 loadButton.addEventListener('change', onFileSelection);
 stepButton.addEventListener('click', onStep)
 memoryNextButton.addEventListener('click', onMemoryPageNext);
 memoryPrevButton.addEventListener('click', onMemoryPagePrev);
+
+////////////////////////////// start //////////////////////////////////////////////////////////////
 
 initUI();
