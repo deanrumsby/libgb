@@ -1,4 +1,3 @@
 # TODO
 
-- Clean up memory view code!!
-- Rethink init for memory view too
+- Allow setting of registers and memory values from frontend
