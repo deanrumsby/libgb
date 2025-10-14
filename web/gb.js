@@ -12,10 +12,19 @@ export default async function init() {
         get b() {
             return exports.gb_registers_b_get(gb);
         },
+        set b(value) {
+            exports.gb_registers_b_set(gb, value);
+        },
         get c() {
             return exports.gb_registers_c_get(gb);
         },
+        set c(value) {
+            exports.gb_registers_c_set(gb, value);
+        },
         read: (address) => exports.gb_memory_get(gb, address),
+        write: (address, value) => {
+            exports.gb_memory_set(gb, address, value);
+        },
         load: (bytes) => {
             const maxRomSize = exports.gb_gameboy_rom_size_get();
 

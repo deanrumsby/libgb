@@ -12,10 +12,28 @@ uint8_t gb_registers_b_get(GB_GameBoy *gb)
 }
 
 /**
+ * Sets the value of the 8-bit register B.
+ */
+EMSCRIPTEN_KEEPALIVE
+void gb_registers_b_set(GB_GameBoy *gb, uint8_t value)
+{
+    gb->sm83->b = value;
+}
+
+/**
  * Gets the value of the 8-bit register C.
  */
 EMSCRIPTEN_KEEPALIVE
 uint8_t gb_registers_c_get(GB_GameBoy *gb)
 {
     return gb->sm83->c;
+}
+
+/**
+ * Sets the value of the 8-bit register B.
+ */
+EMSCRIPTEN_KEEPALIVE
+void gb_registers_c_set(GB_GameBoy *gb, uint8_t value)
+{
+    gb->sm83->c = value;
 }

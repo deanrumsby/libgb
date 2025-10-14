@@ -38,15 +38,23 @@ const REGISTERS = [
         id: "b",
         label: "B:",
         bits: 8,
+        maxLength: 2,
         format: (value) => formatHex(value, 2),
         get: () => gb.b,
+        set: (value) => {
+            gb.b = value;
+        }
     },
     {
         id: "c",
         label: "C:",
         bits: 8,
+        maxLength: 2,
         format: (value) => formatHex(value, 2),
         get: () => gb.c,
+        set: (value) => {
+            gb.c = value;
+        }
     }
 ];
 
@@ -95,6 +103,16 @@ function initRegistersView() {
         const input = document.createElement('input');
         input.id = register.id;
         input.dataset.bits = register.bits;
+        input.maxLength = register.maxLength;
+
+        input.addEventListener('input', (event) => {
+            const valueAsString = event.target.value;
+            const value = Number.parseInt(valueAsString, 16);
+
+            if (Number.isInteger(value)) {
+                register.set(value);
+            }
+        })
 
         const label = document.createElement('label');
         label.htmlFor = register.id;
@@ -219,6 +237,19 @@ function createMemoryLine(offset) {
         // can be used by event listeners to edit 
         // and fetch the memory value
         input.name = address;
+
+        // each cell can only hold two hexadecimal digits
+        input.maxLength = 2;
+
+        // attach a listener that writes to memory when editing
+        input.addEventListener('input', (event) => {
+            const valueAsString = event.target.value;
+            const value = Number.parseInt(valueAsString, 16);
+
+            if (Number.isInteger(value)) {
+                gb.write(address, value);
+            }
+        });
 
         // append to the line
         cells.appendChild(input);

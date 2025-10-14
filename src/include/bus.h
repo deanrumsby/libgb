@@ -28,4 +28,6 @@ typedef struct GB_Bus
 uint8_t gb_bus_read(GB_Bus *bus, uint16_t address);
 void gb_bus_write(GB_Bus *bus, uint16_t address, uint8_t value);
 
+uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
+
 #endif

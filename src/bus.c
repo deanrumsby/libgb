@@ -28,7 +28,6 @@
 #define GB_BUS_INVALID_READ_VALUE 0xcd /* a random value to help show invalid reads */
 
 static bool gb_bus_address_writeable(uint16_t address);
-static uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address);
 
 /**
  * Reads the byte at a given 16-bit address in memory.
@@ -54,9 +53,9 @@ void gb_bus_write(GB_Bus *bus, uint16_t address, uint8_t value)
     if (!gb_bus_address_writeable(address))
         return;
 
-    // this check might be redundant once the whole memory map is built
     uint8_t *ptr = gb_bus_address_ptr_get(bus, address);
 
+    // this check might be redundant once the whole memory map is built
     if (ptr)
         *ptr = value;
 }
@@ -73,7 +72,7 @@ static bool gb_bus_address_writeable(uint16_t address)
 /**
  * Gets a pointer to a specific place in memory.
  */
-static uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address)
+uint8_t *gb_bus_address_ptr_get(GB_Bus *bus, uint16_t address)
 {
     // ROM BANK 00
     if (address >= GB_BUS_ROM00_START && address <= GB_BUS_ROM00_END)
