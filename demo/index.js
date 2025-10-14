@@ -35,6 +35,17 @@ const MEMORY_PAGE_COUNT = MEMORY_TOTAL_SIZE / MEMORY_PAGE_SIZE;
  */
 const REGISTERS = [
     {
+        id: "a",
+        label: "A:",
+        bits: 8,
+        maxLength: 2,
+        format: (value) => formatHex(value, 2),
+        get: () => gb.a,
+        set: (value) => {
+            gb.a = value;
+        }
+    },
+    {
         id: "b",
         label: "B:",
         bits: 8,
@@ -100,11 +111,13 @@ function initRegistersView() {
         const div = document.createElement('div');
         div.classList.add('register');
 
+        // set input attributes
         const input = document.createElement('input');
         input.id = register.id;
         input.dataset.bits = register.bits;
         input.maxLength = register.maxLength;
 
+        // add listener that sets register values on edit
         input.addEventListener('input', (event) => {
             const valueAsString = event.target.value;
             const value = Number.parseInt(valueAsString, 16);
@@ -130,10 +143,24 @@ function initRegistersView() {
  * The memory view allows the user to inspect and edit all the memory addresses
  * that are connected on the bus. The range encompasses all 16-bit addresses i.e.
  * from 0x0000 to 0xffff.
+ * It includes a search function that allows a user to quickly navigate to a provided
+ * address. 
  */
 function initMemoryView() {
+    const search = document.querySelector('#memory-search');
+
+    // set up search function 
+    search.addEventListener('input', (event) => {
+        const addressAsString = event.target.value;
+        const address = Number.parseInt(addressAsString, 16);
+
+        if (Number.isInteger(address)) {
+            viewMemoryAddress(address);
+        }
+    })
+
+    // show first page of memory
     viewMemoryPage(0);
-    updateMemory();
 }
 
 //////////////////////////////////// update functions /////////////////////////////////////////////
@@ -174,6 +201,25 @@ function updateMemory() {
 //////////////////////////////////// helper functions /////////////////////////////////////////////
 
 /**
+ * Navigates to the memory page that contains the given address
+ * and then applies highlighting to the exact cell.
+ * @param {number} address 
+ */
+function viewMemoryAddress(address) {
+    const container = document.querySelector('#memory');
+
+    // view the page
+    const page = Math.floor(address / MEMORY_PAGE_SIZE);
+    viewMemoryPage(page);
+
+    // apply highlighting
+    const cell = container.querySelector(`input[name="${address}"]`);
+    cell.classList.add('highlight');
+
+    updateMemory();
+}
+
+/**
  * Updates the UI to show a particular page of memory.
  * @param {number} page the page index that should be viewed
  */
@@ -181,6 +227,7 @@ function viewMemoryPage(page) {
     const container = document.querySelector('#memory');
     container.replaceChildren(createMemoryPage(page));
     currentMemoryPage = page;
+    updateMemory();
 }
 
 /**

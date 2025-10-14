@@ -40,3 +40,7 @@ h2 {
     width: 3ch;
     border: 0;
 }
+
+.highlight {
+    background-color: yellow;
+}
