@@ -156,6 +156,8 @@ function initMemoryView() {
 
         if (Number.isInteger(address)) {
             viewMemoryAddress(address);
+        } else if (addressAsString === '') {
+            viewMemoryPage(0);
         }
     })
 
