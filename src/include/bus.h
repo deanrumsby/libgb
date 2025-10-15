@@ -11,6 +11,27 @@
 #define GB_EXTERNAL_RAM_BANK_SIZE (8 * GB_KiB) /* external ram bank size in bytes */
 #define GB_WRAM_BANK_SIZE (4 * GB_KiB)         /* wram bank size in bytes */
 
+#define GB_BUS_ROM00_START 0
+#define GB_BUS_ROM00_END 0x3fff
+
+#define GB_BUS_ROM01_START 0x4000
+#define GB_BUS_ROM01_END 0x7fff
+
+#define GB_BUS_VRAM_START 0x8000
+#define GB_BUS_VRAM_END 0x9fff
+
+#define GB_BUS_EXTERNAL_RAM_START 0xa000
+#define GB_BUS_EXTERNAL_RAM_END 0xbfff
+
+#define GB_BUS_WRAM00_START 0xc000
+#define GB_BUS_WRAM00_END 0xcfff
+
+#define GB_BUS_WRAM01_START 0xd000
+#define GB_BUS_WRAM01_END 0xdfff
+
+#define GB_BUS_ECHO_RAM_START 0xe000
+#define GB_BUS_ECHO_RAM_END 0xfdff
+
 /**
  * A model of a GameBoy address bus.
  */

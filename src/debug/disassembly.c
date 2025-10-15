@@ -1,0 +1,110 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <emscripten.h>
+#include "instruction.h"
+#include "bus.h"
+#include "gb.h"
+#include "utils.h"
+
+#define GB_DISASSEMBLY_LINE_MAX_LENGTH 19
+
+typedef struct GB_Disassembly
+{
+    char *text;
+    int length;
+} GB_Disassembly;
+
+/**
+ * Takes an instance of the Game Boy and disassembles it's ROM.
+ */
+EMSCRIPTEN_KEEPALIVE
+GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
+{
+    GB_Disassembly *disassembly = malloc(sizeof(GB_Disassembly));
+
+    char line[GB_DISASSEMBLY_LINE_MAX_LENGTH];
+    int line_length;
+
+    uint16_t address = GB_BUS_ROM00_START;
+    while (address <= GB_BUS_ROM01_END)
+    {
+        uint8_t opcode = gb_bus_read(gb->bus, address);
+        GB_Instruction instruction;
+        gb_instruction_decode(&instruction, opcode);
+        line_length = gb_disassembly_line_print(&instruction, address, line, GB_DISASSEMBLY_LINE_MAX_LENGTH);
+        gb_disassembly_line_append(disassembly, line, line_length);
+
+        address += instruction.length;
+    }
+
+    return disassembly;
+}
+
+static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t address, char *buffer, int max_length)
+{
+    int length;
+
+    switch (instruction->type)
+    {
+    case GB_INSTRUCTION_UNDEFINED:
+    {
+        length = snprintf(buffer, max_length, "%04X: UNDEFINED\n", address);
+        break;
+    }
+    case GB_INSTRUCTION_NOP:
+    {
+        length = snprintf(buffer, max_length, "%04X: NOP\n", address);
+        break;
+    }
+    case GB_INSTRUCTION_LD_BC_N16:
+    {
+        uint16_t immediate = gb_utils_u16_from_u8(instruction->bytes[1], instruction->bytes[2]);
+        length = snprintf(buffer, max_length, "%04X: LD BC, $%04X\n", address, immediate);
+        break;
+    }
+    case GB_INSTRUCTION_LD_MEM_BC_A:
+    {
+        length = snprintf(buffer, max_length, "%04X: LD [BC], A\n", address);
+        break;
+    }
+    }
+}
+
+static int gb_disassembly_line_append(GB_Disassembly *disassembly, char *line, int line_length)
+{
+    for (int i = 0; i < line_length; i++)
+    {
+        disassembly->text[disassembly->length] = line[i];
+        disassembly->length += 1;
+    }
+
+    return disassembly->length;
+}
+
+/**
+ * Frees the memory associated with the disassembly.
+ */
+EMSCRIPTEN_KEEPALIVE
+void gb_disassembly_destroy(GB_Disassembly *disassembly)
+{
+    free(disassembly->text);
+    free(disassembly);
+}
+
+/**
+ * Returns a pointer to the disassembly text.
+ */
+EMSCRIPTEN_KEEPALIVE
+char *gb_disassembly_text_get(GB_Disassembly *disassembly)
+{
+    return disassembly->text;
+}
+
+/**
+ * Returns the length of the disassembly text.
+ */
+EMSCRIPTEN_KEEPALIVE
+int gb_disassembly_length_get(GB_Disassembly *disassembly)
+{
+    return disassembly->length;
+}
