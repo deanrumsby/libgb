@@ -44,11 +44,23 @@
         <div>
             <button id="memory-prev-button">Prev</button>
             <button id="memory-next-button">Next</button>
-            <label for="memory-search">Search:</label>
             <input
                 id="memory-search"
+                placeholder="Search..."
                 maxlength="4"
             />
+            <select
+                id="memory-select"
+                name="memory-select"
+            >
+                <option value="0000">ROM00</option>
+                <option value="4000">ROM01</option>
+                <option value="8000">VRAM</option>
+                <option value="a000">EXT_RAM</option>
+                <option value="c000">WRAM00</option>
+                <option value="d000">WRAM01</option>
+                <option value="e000">ECHO_RAM</option>
+            </select>
         </div>
         <div
             id="memory"

@@ -81,13 +81,6 @@ const gb = await init();
  */
 let currentMemoryPage = 0;
 
-////////////////////////////////////// buttons ////////////////////////////////////////////////////
-
-const loadButton = document.querySelector('#load-button');
-const stepButton = document.querySelector('#step-button');
-const memoryPrevButton = document.querySelector('#memory-prev-button');
-const memoryNextButton = document.querySelector('#memory-next-button');
-
 //////////////////////////////////// ui initializer functions /////////////////////////////////////
 
 /**
@@ -143,25 +136,8 @@ function initRegistersView() {
  * The memory view allows the user to inspect and edit all the memory addresses
  * that are connected on the bus. The range encompasses all 16-bit addresses i.e.
  * from 0x0000 to 0xffff.
- * It includes a search function that allows a user to quickly navigate to a provided
- * address. 
  */
 function initMemoryView() {
-    const search = document.querySelector('#memory-search');
-
-    // set up search function 
-    search.addEventListener('input', (event) => {
-        const addressAsString = event.target.value;
-        const address = Number.parseInt(addressAsString, 16);
-
-        if (Number.isInteger(address)) {
-            viewMemoryAddress(address);
-        } else if (addressAsString === '') {
-            viewMemoryPage(0);
-        }
-    })
-
-    // show first page of memory
     viewMemoryPage(0);
 }
 
@@ -309,6 +285,15 @@ function createMemoryLine(offset) {
     return container;
 }
 
+////////////////////////////////////// fixed ui ///////////////////////////////////////////////////
+
+const loadButton = document.querySelector('#load-button');
+const stepButton = document.querySelector('#step-button');
+const memoryPrevButton = document.querySelector('#memory-prev-button');
+const memoryNextButton = document.querySelector('#memory-next-button');
+const memorySearchInput = document.querySelector('#memory-search');
+const memoryRegionSelect = document.querySelector('#memory-select');
+
 /////////////////////////////////////// handlers //////////////////////////////////////////////////
 
 /**
@@ -323,6 +308,34 @@ async function onFileSelection(event) {
     updateMemory();
 }
 
+/**
+ * Handles when the user searches for a specific memory address
+ * in the memory view.
+ * @param {Event} event 
+ */
+function onMemorySearch(event) {
+    const addressAsString = event.target.value;
+    const address = Number.parseInt(addressAsString, 16);
+
+    if (Number.isInteger(address)) {
+        viewMemoryAddress(address);
+    } else if (addressAsString === '') {
+        viewMemoryPage(0);
+    }
+}
+
+/**
+ * Handles when a user selects a specific memory region
+ * in the memory view.
+ * @param {Event} event 
+ */
+function onMemoryRegionSelect(event) {
+    const addressAsString = event.target.value;
+    const address = Number.parseInt(addressAsString, 16);
+
+    const page = Math.floor(address / MEMORY_PAGE_SIZE);
+    viewMemoryPage(page);
+}
 
 /**
  * Handles when the user asks for the next page of memory
@@ -359,6 +372,8 @@ loadButton.addEventListener('change', onFileSelection);
 stepButton.addEventListener('click', onStep)
 memoryNextButton.addEventListener('click', onMemoryPageNext);
 memoryPrevButton.addEventListener('click', onMemoryPagePrev);
+memorySearchInput.addEventListener('input', onMemorySearch);
+memoryRegionSelect.addEventListener('change', onMemoryRegionSelect);
 
 ////////////////////////////// start //////////////////////////////////////////////////////////////
 
