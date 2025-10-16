@@ -6,7 +6,12 @@
 #include "gb.h"
 #include "utils.h"
 
-#define GB_DISASSEMBLY_LINE_MAX_LENGTH 19
+#define GB_DISASSEMBLY_LINE_MAX_LENGTH 20
+#define GB_DISASSEMBLY_MAX_LINE_COUNT (2 * GB_ROM_BANK_SIZE)
+#define GB_DISASSEMBLY_MAX_SIZE \
+    (GB_DISASSEMBLY_LINE_MAX_LENGTH * GB_DISASSEMBLY_MAX_LINE_COUNT)
+
+// TODO: the above GB_DISASSEMBLY_MAX_SIZE is a crude calculation that could be refined.
 
 typedef struct GB_Disassembly
 {
@@ -24,7 +29,8 @@ EMSCRIPTEN_KEEPALIVE
 GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
 {
     GB_Disassembly *disassembly = malloc(sizeof(GB_Disassembly));
-    disassembly->text = malloc(GB_DISASSEMBLY_LINE_MAX_LENGTH * 10000);
+    disassembly->text = malloc(GB_DISASSEMBLY_MAX_SIZE);
+    disassembly->length = 0;
 
     char line[GB_DISASSEMBLY_LINE_MAX_LENGTH];
     int line_length;
@@ -41,12 +47,17 @@ GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
         address += instruction.length;
     }
 
+    disassembly->text[disassembly->length] = '\0';
+
     return disassembly;
 }
 
+/**
+ * Prints an instruction as a line of disassembly to a provided buffer.
+ */
 static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t address, char *buffer, int max_length)
 {
-    int length;
+    int length = 0;
 
     switch (instruction->type)
     {
@@ -76,6 +87,9 @@ static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t addre
     return length;
 }
 
+/**
+ * Appends a new line of disassembly to the currently processed disassembly string.
+ */
 static int gb_disassembly_line_append(GB_Disassembly *disassembly, char *line, int line_length)
 {
     for (int i = 0; i < line_length; i++)

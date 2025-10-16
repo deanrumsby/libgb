@@ -30,6 +30,16 @@ const MEMORY_PAGE_SIZE = MEMORY_PAGE_LINE_SIZE * MEMORY_PAGE_LINE_COUNT;
 const MEMORY_PAGE_COUNT = MEMORY_TOTAL_SIZE / MEMORY_PAGE_SIZE;
 
 /**
+ * The start address of the ROM
+ */
+const MEMORY_ROM_START = 0x0000;
+
+/**
+ * The end address (inclusive) of the ROM
+ */
+const MEMORY_ROM_END = 0x7fff;
+
+/**
  * Config for the registers view. 
  * Used when sizing the input boxes and handling how to get and set values.
  */
@@ -176,6 +186,9 @@ function updateMemory() {
     }
 }
 
+/**
+ * Updates the disassembly view with a new instance of the disassembled ROM.
+ */
 function updateDisassembly() {
     const container = document.querySelector('#disassembly');
     const disassembly = gb.disassemble();
@@ -279,6 +292,11 @@ function createMemoryLine(offset) {
 
             if (Number.isInteger(value)) {
                 gb.write(address, value);
+
+                // if the memory is ROM, we need to update our disassembly view
+                if (address >= MEMORY_ROM_START && address <= MEMORY_ROM_END) {
+                    updateDisassembly();
+                }
             }
         });
 

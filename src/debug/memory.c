@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 #include <emscripten.h>
 #include "gb.h"
 #include "bus.h"
