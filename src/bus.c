@@ -4,27 +4,6 @@
 #include "bus.h"
 #include "sm83.h"
 
-#define GB_BUS_ROM00_START 0
-#define GB_BUS_ROM00_END 0x3fff
-
-#define GB_BUS_ROM01_START 0x4000
-#define GB_BUS_ROM01_END 0x7fff
-
-#define GB_BUS_VRAM_START 0x8000
-#define GB_BUS_VRAM_END 0x9fff
-
-#define GB_BUS_EXTERNAL_RAM_START 0xa000
-#define GB_BUS_EXTERNAL_RAM_END 0xbfff
-
-#define GB_BUS_WRAM00_START 0xc000
-#define GB_BUS_WRAM00_END 0xcfff
-
-#define GB_BUS_WRAM01_START 0xd000
-#define GB_BUS_WRAM01_END 0xdfff
-
-#define GB_BUS_ECHO_RAM_START 0xe000
-#define GB_BUS_ECHO_RAM_END 0xfdff
-
 #define GB_BUS_INVALID_READ_VALUE 0xcd /* a random value to help show invalid reads */
 
 static bool gb_bus_address_writeable(uint16_t address);
