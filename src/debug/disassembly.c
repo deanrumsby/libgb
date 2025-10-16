@@ -40,7 +40,12 @@ GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
     {
         uint8_t opcode = gb_bus_read(gb->bus, address);
         GB_Instruction instruction;
+
         gb_instruction_decode(&instruction, opcode);
+
+        for (int i = 0; i < instruction.length; i++)
+            instruction.bytes[i] = gb_bus_read(gb->bus, address + i);
+
         line_length = gb_disassembly_line_print(&instruction, address, line, GB_DISASSEMBLY_LINE_MAX_LENGTH);
         gb_disassembly_line_append(disassembly, line, line_length);
 
