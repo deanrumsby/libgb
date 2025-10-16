@@ -39,10 +39,22 @@ export default async function init() {
             }
 
             const ptr = exports.gb_gameboy_rom_ptr_get(gb);
-            console.log('ptr', ptr);
             const buffer = new Uint8Array(exports.memory.buffer);
             buffer.set(bytes, ptr);
         },
         step: () => exports.gb_gameboy_step(gb),
+        disassemble: () => {
+            const disassembly = exports.gb_disassembly_create(gb);
+            const ptr = exports.gb_disassembly_text_get(disassembly);
+            const length = exports.gb_disassembly_length_get(disassembly);
+
+            const utf8decoder = new TextDecoder();
+            const encodedText = new Uint8Array(exports.memory.buffer, ptr, length);
+
+            const decodedText = utf8decoder.decode(encodedText);
+            exports.gb_disassembly_destroy(disassembly);
+
+            return decodedText;
+        }
     }
 }

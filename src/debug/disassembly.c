@@ -14,6 +14,9 @@ typedef struct GB_Disassembly
     int length;
 } GB_Disassembly;
 
+static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t address, char *buffer, int max_length);
+static int gb_disassembly_line_append(GB_Disassembly *disassembly, char *line, int line_length);
+
 /**
  * Takes an instance of the Game Boy and disassembles it's ROM.
  */
@@ -21,6 +24,7 @@ EMSCRIPTEN_KEEPALIVE
 GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
 {
     GB_Disassembly *disassembly = malloc(sizeof(GB_Disassembly));
+    disassembly->text = malloc(GB_DISASSEMBLY_LINE_MAX_LENGTH * 10000);
 
     char line[GB_DISASSEMBLY_LINE_MAX_LENGTH];
     int line_length;
@@ -68,6 +72,8 @@ static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t addre
         break;
     }
     }
+
+    return length;
 }
 
 static int gb_disassembly_line_append(GB_Disassembly *disassembly, char *line, int line_length)
