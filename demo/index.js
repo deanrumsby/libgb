@@ -100,6 +100,7 @@ let currentMemoryPage = 0;
 function initUI() {
     initRegistersView();
     initMemoryView();
+    initDisassemblyView();
 }
 
 /**
@@ -149,6 +150,10 @@ function initRegistersView() {
  */
 function initMemoryView() {
     viewMemoryPage(0);
+}
+
+function initDisassemblyView() {
+    updateDisassembly();
 }
 
 //////////////////////////////////// update functions /////////////////////////////////////////////
