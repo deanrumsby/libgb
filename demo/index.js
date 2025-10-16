@@ -187,6 +187,26 @@ function updateMemory() {
 }
 
 /**
+ * Updates the selected memory region to show the correct value.
+ * Used when searching the memory view via the search function 
+ * or via incrementing or decrementing the page.
+ */
+function updateMemoryRegionSelect() {
+    const pageStartAddress = currentMemoryPage * MEMORY_PAGE_SIZE;
+    const options = memoryRegionSelect.querySelectorAll('option');
+
+    let result = Number.parseInt(options[0].value, 16);
+    for (let option of options) {
+        const regionStartAddress = Number.parseInt(option.value, 16);
+        if (regionStartAddress > pageStartAddress) {
+            break;
+        }
+        result = regionStartAddress;
+    }
+    memoryRegionSelect.value = result.toString(16);
+}
+
+/**
  * Updates the disassembly view with a new instance of the disassembled ROM.
  */
 function updateDisassembly() {
@@ -346,6 +366,8 @@ function onMemorySearch(event) {
     } else if (addressAsString === '') {
         viewMemoryPage(0);
     }
+
+    updateMemoryRegionSelect()
 }
 
 /**
@@ -369,6 +391,7 @@ function onMemoryPageNext() {
     const page = Math.min(currentMemoryPage + 1, MEMORY_PAGE_COUNT - 1);
     viewMemoryPage(page);
     updateMemory();
+    updateMemoryRegionSelect();
 }
 
 /**
@@ -379,6 +402,7 @@ function onMemoryPagePrev() {
     const page = Math.max(currentMemoryPage - 1, 0);
     viewMemoryPage(page);
     updateMemory();
+    updateMemoryRegionSelect();
 }
 
 /**
