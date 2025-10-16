@@ -317,7 +317,6 @@ const memoryPrevButton = document.querySelector('#memory-prev-button');
 const memoryNextButton = document.querySelector('#memory-next-button');
 const memorySearchInput = document.querySelector('#memory-search');
 const memoryRegionSelect = document.querySelector('#memory-select');
-const disassembleButton = document.querySelector('#disassemble-button');
 
 /////////////////////////////////////// handlers //////////////////////////////////////////////////
 
@@ -391,10 +390,6 @@ function onStep() {
     updateUI();
 }
 
-function onDisassemble() {
-    updateDisassembly();
-}
-
 ///////////////////////////// event listeners /////////////////////////////////////////////////////
 
 loadButton.addEventListener('change', onFileSelection);
@@ -403,7 +398,6 @@ memoryNextButton.addEventListener('click', onMemoryPageNext);
 memoryPrevButton.addEventListener('click', onMemoryPagePrev);
 memorySearchInput.addEventListener('input', onMemorySearch);
 memoryRegionSelect.addEventListener('change', onMemoryRegionSelect);
-disassembleButton.addEventListener('click', onDisassemble);
 
 ////////////////////////////// start //////////////////////////////////////////////////////////////
 
