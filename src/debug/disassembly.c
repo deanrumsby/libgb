@@ -6,7 +6,7 @@
 #include "gb.h"
 #include "utils.h"
 
-#define GB_DISASSEMBLY_LINE_MAX_LENGTH 20
+#define GB_DISASSEMBLY_LINE_MAX_LENGTH 30
 #define GB_DISASSEMBLY_MAX_LINE_COUNT (2 * GB_ROM_BANK_SIZE)
 #define GB_DISASSEMBLY_MAX_SIZE \
     (GB_DISASSEMBLY_LINE_MAX_LENGTH * GB_DISASSEMBLY_MAX_LINE_COUNT)
@@ -63,28 +63,29 @@ GB_Disassembly *gb_disassembly_create(GB_GameBoy *gb)
 static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t address, char *buffer, int max_length)
 {
     int length = 0;
+    uint8_t *bytes = instruction->bytes;
 
     switch (instruction->type)
     {
     case GB_INSTRUCTION_UNDEFINED:
     {
-        length = snprintf(buffer, max_length, "%04X: UNDEFINED\n", address);
+        length = snprintf(buffer, max_length, "%04X: %02X\tUNDEFINED\n", address, bytes[0]);
         break;
     }
     case GB_INSTRUCTION_NOP:
     {
-        length = snprintf(buffer, max_length, "%04X: NOP\n", address);
+        length = snprintf(buffer, max_length, "%04X: %02X\tNOP\n", address, bytes[0]);
         break;
     }
     case GB_INSTRUCTION_LD_BC_N16:
     {
-        uint16_t immediate = gb_utils_u16_from_u8(instruction->bytes[1], instruction->bytes[2]);
-        length = snprintf(buffer, max_length, "%04X: LD BC, $%04X\n", address, immediate);
+        uint16_t n16 = gb_utils_u16_from_u8(bytes[1], bytes[2]);
+        length = snprintf(buffer, max_length, "%04X: %02X%02X%02X\tLD BC, $%04X\n", address, bytes[0], bytes[1], bytes[2], n16);
         break;
     }
     case GB_INSTRUCTION_LD_MEM_BC_A:
     {
-        length = snprintf(buffer, max_length, "%04X: LD [BC], A\n", address);
+        length = snprintf(buffer, max_length, "%04X: %02X\tLD [BC], A\n", address, bytes[0]);
         break;
     }
     }
