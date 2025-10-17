@@ -93,5 +93,13 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
         gb_bus_write(sm83->bus, address, sm83->a);
         break;
     }
+    // 03 INC BC
+    case GB_INSTRUCTION_INC_BC:
+    {
+        uint16_t value = gb_utils_u16_from_u8(sm83->b, sm83->c);
+        value += 1;
+        gb_utils_u16_into_u8_pair(value, &sm83->b, &sm83->c);
+        break;
+    }
     }
 }

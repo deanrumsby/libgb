@@ -3,6 +3,24 @@
 #include "gb.h"
 
 /**
+ * Gets the value of the 16-bit register PC.
+ */
+EMSCRIPTEN_KEEPALIVE
+uint16_t gb_registers_pc_get(GB_GameBoy *gb)
+{
+    return gb->sm83->pc;
+}
+
+/**
+ * Sets the value of the 16-bit register PC.
+ */
+EMSCRIPTEN_KEEPALIVE
+void gb_registers_pc_set(GB_GameBoy *gb, uint16_t value)
+{
+    gb->sm83->pc = value;
+}
+
+/**
  * Gets the value of the 8-bit register A.
  */
 EMSCRIPTEN_KEEPALIVE

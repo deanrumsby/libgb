@@ -9,6 +9,12 @@ export default async function init() {
     const gb = exports.gb_gameboy_create();
 
     return {
+        get pc() {
+            return exports.gb_registers_pc_get(gb);
+        },
+        set pc(value) {
+            exports.gb_registers_pc_set(gb, value);
+        },
         get a() {
             return exports.gb_registers_a_get(gb);
         },

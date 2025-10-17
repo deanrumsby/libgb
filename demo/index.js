@@ -45,9 +45,18 @@ const MEMORY_ROM_END = 0x7fff;
  */
 const REGISTERS = [
     {
+        id: "pc",
+        label: "PC:",
+        maxLength: 4,
+        format: (value) => formatHex(value, 4),
+        get: () => gb.pc,
+        set: (value) => {
+            gb.pc = value;
+        }
+    },
+    {
         id: "a",
         label: "A:",
-        bits: 8,
         maxLength: 2,
         format: (value) => formatHex(value, 2),
         get: () => gb.a,
@@ -58,7 +67,6 @@ const REGISTERS = [
     {
         id: "b",
         label: "B:",
-        bits: 8,
         maxLength: 2,
         format: (value) => formatHex(value, 2),
         get: () => gb.b,
@@ -69,7 +77,6 @@ const REGISTERS = [
     {
         id: "c",
         label: "C:",
-        bits: 8,
         maxLength: 2,
         format: (value) => formatHex(value, 2),
         get: () => gb.c,

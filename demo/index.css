@@ -22,8 +22,12 @@ h2 {
     gap: 0.5em;
 }
 
-.register input[data-bits="8"] {
+.register input[maxlength="2"] {
     width: 3ch;
+}
+
+.register input[maxlength="4"] {
+    width: 5ch;
 }
 
 .memory {
