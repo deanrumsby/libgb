@@ -186,6 +186,11 @@ function initRegisters() {
             }
         })
 
+        // add listener that handles current instruction tracking
+        if (register.id == 'pc') {
+            input.addEventListener('input', highlightCurrentInstruction);
+        }
+
         const label = document.createElement('label');
         label.htmlFor = register.id;
         label.textContent = register.label;
@@ -253,6 +258,7 @@ function updateUI() {
     updateRegisters();
     updateFlags();
     updateMemory();
+    highlightCurrentInstruction();
 }
 
 /**
@@ -313,14 +319,36 @@ function updateMemoryRegionSelect() {
 
 /**
  * Updates the disassembly view with a new instance of the disassembled ROM.
+ * Adds highlighting to current instruction.
  */
 function updateDisassembly() {
     const container = document.querySelector('#disassembly');
     const disassembly = gb.disassemble();
     container.replaceChildren(disassembly);
+    highlightCurrentInstruction();
 }
 
 //////////////////////////////////// helper functions /////////////////////////////////////////////
+
+/**
+ * Marks up the disassembly with highlighting for the current 
+ * instruction (according to the program counter)
+ */
+function highlightCurrentInstruction() {
+    const container = document.querySelector('#disassembly');
+    const pc = document.querySelector('#pc');
+    const offset = pc.value.padStart(pc.maxLength, '0');
+    const disassembly = container.innerHTML;
+
+    // remove existing highlighting (if any)
+    const unhighlightRegex = new RegExp('^<span class="highlight">(.*)</span>', 'm');
+    const unhighlighted = disassembly.replace(unhighlightRegex, "$1");
+
+    // add highlighting to current instruction
+    const highlightRegex = new RegExp(`^(${offset}:.*)$`, 'm');
+    const highlighted = unhighlighted.replace(highlightRegex, '<span class="highlight">$1</span>');
+    container.innerHTML = highlighted;
+}
 
 /**
  * Navigates to the memory page that contains the given address
