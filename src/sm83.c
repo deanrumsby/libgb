@@ -126,5 +126,11 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
         sm83->H = (sm83->b & 0xf) == 0xf; // lower nibble underflow
         break;
     }
+    // 06 LD B, n8
+    case GB_INSTRUCTION_LD_B_N8:
+    {
+        sm83->b = instruction->bytes[1];
+        break;
+    }
     }
 }
