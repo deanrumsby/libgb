@@ -138,6 +138,9 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
     case GB_INSTRUCTION_RLCA:
     {
         sm83->C = (sm83->a & 0x80) == 0x80; // msb == 1
+        sm83->Z = false;
+        sm83->H = false;
+        sm83->N = false;
         sm83->a <<= 1;
         break;
     }
