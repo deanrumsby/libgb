@@ -93,6 +93,11 @@ static int gb_disassembly_line_print(GB_Instruction *instruction, uint16_t addre
         length = snprintf(buffer, max_length, "%04X: %02X\tINC BC\n", address, bytes[0]);
         break;
     }
+    case GB_INSTRUCTION_INC_B:
+    {
+        length = snprintf(buffer, max_length, "%04X: %02X\tINC B\n", address, bytes[0]);
+        break;
+    }
     }
 
     return length;

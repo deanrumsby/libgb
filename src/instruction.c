@@ -47,6 +47,13 @@ void gb_instruction_decode(GB_Instruction *instruction, uint8_t opcode)
             instruction->t_cycles = 8;
             break;
         }
+        case 0x4:
+        {
+            instruction->type = GB_INSTRUCTION_INC_B;
+            instruction->length = 1;
+            instruction->t_cycles = 4;
+            break;
+        }
         default:
         {
             instruction->type = GB_INSTRUCTION_UNDEFINED;

@@ -86,6 +86,45 @@ const REGISTERS = [
     }
 ];
 
+/**
+ * Config for the flags within the register view. 
+ * Used when creating checkboxes handling how to get and set their state.
+ */
+const FLAGS = [
+    {
+        id: "Z",
+        label: "Z:",
+        get: () => gb.Z,
+        set: (value) => {
+            gb.Z = value;
+        }
+    },
+    {
+        id: "N",
+        label: "N:",
+        get: () => gb.N,
+        set: (value) => {
+            gb.N = value;
+        }
+    },
+    {
+        id: "H",
+        label: "H:",
+        get: () => gb.H,
+        set: (value) => {
+            gb.H = value;
+        }
+    },
+    {
+        id: "C",
+        label: "C:",
+        get: () => gb.C,
+        set: (value) => {
+            gb.C = value;
+        }
+    },
+]
+
 ///////////////////////////////////// state ///////////////////////////////////////////////////////
 
 /**
@@ -116,6 +155,15 @@ function initUI() {
  * found in the registers of the Game Boy's SM83 CPU core.
  */
 function initRegistersView() {
+    initRegisters();
+    initFlags();
+}
+
+/**
+ * Initializes the register inputs.
+ * Attaches listeners to allow editing their state.
+ */
+function initRegisters() {
     const container = document.querySelector('#registers');
 
     for (const register of REGISTERS) {
@@ -150,6 +198,39 @@ function initRegistersView() {
 }
 
 /**
+ * Initializes the flag checkboxes.
+ * Attaches listeners to allow editing their state.
+ */
+function initFlags() {
+    const container = document.querySelector('#flags');
+
+    for (const flag of FLAGS) {
+        const div = document.createElement('div');
+        div.classList.add('flag');
+
+        // set input attributes
+        const input = document.createElement('input');
+        input.id = flag.id;
+        input.type = "checkbox";
+
+        // add listener that sets/unsets flag
+        input.addEventListener('input', (event) => {
+            const value = event.target.checked;
+            flag.set(value);
+        })
+
+        const label = document.createElement('label');
+        label.htmlFor = flag.id;
+        label.textContent = flag.label;
+
+        div.replaceChildren(label, input);
+        container.appendChild(div);
+    }
+
+    updateFlags();
+}
+
+/**
  * Initializes the memory view.
  * The memory view allows the user to inspect and edit all the memory addresses
  * that are connected on the bus. The range encompasses all 16-bit addresses i.e.
@@ -166,10 +247,11 @@ function initDisassemblyView() {
 //////////////////////////////////// update functions /////////////////////////////////////////////
 
 /**
- * Updates all UI elements
+ * Updates all UI elements except the disassembly view
  */
 function updateUI() {
     updateRegisters();
+    updateFlags();
     updateMemory();
 }
 
@@ -182,6 +264,17 @@ function updateRegisters() {
         const input = container.querySelector(`#${register.id}`);
         const value = register.get();
         input.value = register.format(value);
+    }
+}
+
+/**
+ * Updates the shown flag states.
+ */
+function updateFlags() {
+    const container = document.querySelector('#flags');
+    for (const flag of FLAGS) {
+        const checkbox = container.querySelector(`#${flag.id}`);
+        checkbox.checked = flag.get();
     }
 }
 

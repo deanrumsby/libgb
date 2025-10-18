@@ -5,7 +5,6 @@ export default async function init() {
     const bytes = await response.arrayBuffer();
     const { instance: { exports } } = await WebAssembly.instantiate(bytes);
 
-    console.log('exports', exports);
     const gb = exports.gb_gameboy_create();
 
     return {
@@ -32,6 +31,30 @@ export default async function init() {
         },
         set c(value) {
             exports.gb_registers_c_set(gb, value);
+        },
+        get Z() {
+            return exports.gb_registers_flag_z_get(gb);
+        },
+        set Z(value) {
+            exports.gb_registers_flag_z_set(gb, value);
+        },
+        get N() {
+            return exports.gb_registers_flag_n_get(gb);
+        },
+        set N(value) {
+            exports.gb_registers_flag_n_set(gb, value);
+        },
+        get H() {
+            return exports.gb_registers_flag_h_get(gb);
+        },
+        set H(value) {
+            exports.gb_registers_flag_h_set(gb, value);
+        },
+        get C() {
+            return exports.gb_registers_flag_c_get(gb);
+        },
+        set C(value) {
+            exports.gb_registers_flag_c_set(gb, value);
         },
         read: (address) => exports.gb_memory_get(gb, address),
         write: (address, value) => {

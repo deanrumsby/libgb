@@ -30,6 +30,13 @@ h2 {
     width: 5ch;
 }
 
+.flags {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
 .memory {
     margin-top: 1em;
 }

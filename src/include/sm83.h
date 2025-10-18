@@ -2,6 +2,7 @@
 #define _SM83_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "bus.h"
 
 /**
@@ -21,7 +22,11 @@ typedef struct GB_SM83
     uint8_t e; /* e register */
     uint8_t h; /* h register */
     uint8_t l; /* l register */
-    uint8_t f; /* flags register */
+
+    bool Z; /* zero flag */
+    bool N; /* negative flag */
+    bool H; /* half carry flag */
+    bool C; /* carry flag */
 } GB_SM83;
 
 void gb_sm83_init(GB_SM83 *sm83, GB_Bus *bus);

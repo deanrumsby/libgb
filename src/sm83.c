@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "sm83.h"
 #include "bus.h"
 #include "instruction.h"
@@ -17,6 +18,7 @@ void gb_sm83_init(GB_SM83 *sm83, GB_Bus *bus)
 {
     sm83->bus = bus;
 
+    // registers
     sm83->pc = 0;
     sm83->sp = 0;
     sm83->a = 0;
@@ -26,7 +28,12 @@ void gb_sm83_init(GB_SM83 *sm83, GB_Bus *bus)
     sm83->e = 0;
     sm83->h = 0;
     sm83->l = 0;
-    sm83->f = 0;
+
+    // flags
+    sm83->Z = false;
+    sm83->N = false;
+    sm83->H = false;
+    sm83->C = false;
 }
 
 /**
@@ -99,6 +106,15 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
         uint16_t value = gb_utils_u16_from_u8(sm83->b, sm83->c);
         value += 1;
         gb_utils_u16_into_u8_pair(value, &sm83->b, &sm83->c);
+        break;
+    }
+    // 04 INC B
+    case GB_INSTRUCTION_INC_B:
+    {
+        sm83->b += 1;
+        sm83->Z = sm83->b == 0;
+        sm83->N = false;
+        sm83->H = sm83->b == 0x10; // lower nibble overflow from 0x0f -> 0x10
         break;
     }
     }
