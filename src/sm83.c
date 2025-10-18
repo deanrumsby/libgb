@@ -78,6 +78,8 @@ static void gb_sm83_decode(GB_SM83 *sm83, GB_Instruction *instruction, uint8_t o
  */
 static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
 {
+    uint8_t *bytes = instruction->bytes;
+
     switch (instruction->type)
     {
     case GB_INSTRUCTION_UNDEFINED:
@@ -89,8 +91,8 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
     // 01 LD BC, n16
     case GB_INSTRUCTION_LD_BC_N16:
     {
-        sm83->b = instruction->bytes[1];
-        sm83->c = instruction->bytes[2];
+        sm83->b = bytes[1];
+        sm83->c = bytes[2];
         break;
     }
     // 02 LD [BC], A
@@ -129,7 +131,14 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
     // 06 LD B, n8
     case GB_INSTRUCTION_LD_B_N8:
     {
-        sm83->b = instruction->bytes[1];
+        sm83->b = bytes[1];
+        break;
+    }
+    // 07 RLCA
+    case GB_INSTRUCTION_RLCA:
+    {
+        sm83->C = (sm83->a & 0x80) == 0x80; // msb == 1
+        sm83->a <<= 1;
         break;
     }
     }
