@@ -17,6 +17,7 @@ typedef enum
     GB_INSTRUCTION_LD_MEM_BC_A,   /* 02 LD [BC], A */
     GB_INSTRUCTION_INC_BC,        /* 03 INC BC */
     GB_INSTRUCTION_INC_B,         /* 04 INC B */
+    GB_INSTRUCTION_DEC_B,         /* 05 DEC B */
 
 } GB_InstructionType;
 

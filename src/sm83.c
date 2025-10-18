@@ -114,7 +114,16 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
         sm83->b += 1;
         sm83->Z = sm83->b == 0;
         sm83->N = false;
-        sm83->H = sm83->b == 0x10; // lower nibble overflow from 0x0f -> 0x10
+        sm83->H = (sm83->b & 0xf) == 0; // lower nibble overflow
+        break;
+    }
+    // 05 DEC B
+    case GB_INSTRUCTION_DEC_B:
+    {
+        sm83->b -= 1;
+        sm83->Z = sm83->b == 0;
+        sm83->N = true;
+        sm83->H = (sm83->b & 0xf) == 0xf; // lower nibble underflow
         break;
     }
     }
