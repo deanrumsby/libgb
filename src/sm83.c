@@ -91,23 +91,23 @@ static void gb_sm83_execute(GB_SM83 *sm83, GB_Instruction *instruction)
     // 01 LD BC, n16
     case GB_INSTRUCTION_LD_BC_N16:
     {
-        sm83->b = bytes[1];
-        sm83->c = bytes[2];
+        sm83->b = bytes[2];
+        sm83->c = bytes[1];
         break;
     }
     // 02 LD [BC], A
     case GB_INSTRUCTION_LD_MEM_BC_A:
     {
-        uint16_t address = gb_utils_u16_from_u8(sm83->b, sm83->c);
+        uint16_t address = gb_utils_u16_from_u8(sm83->c, sm83->b);
         gb_bus_write(sm83->bus, address, sm83->a);
         break;
     }
     // 03 INC BC
     case GB_INSTRUCTION_INC_BC:
     {
-        uint16_t value = gb_utils_u16_from_u8(sm83->b, sm83->c);
+        uint16_t value = gb_utils_u16_from_u8(sm83->c, sm83->b);
         value += 1;
-        gb_utils_u16_into_u8_pair(value, &sm83->b, &sm83->c);
+        gb_utils_u16_into_u8_pair(value, &sm83->c, &sm83->b);
         break;
     }
     // 04 INC B
